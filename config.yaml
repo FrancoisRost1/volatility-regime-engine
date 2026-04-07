@@ -1,0 +1,233 @@
+# config.yaml — volatility-regime-engine
+# Single source of truth for all parameters.
+# Never hardcode any of these values in source files.
+# Load once via utils/config_loader.py and pass as dict.
+
+# =============================================================================
+# DATA
+# =============================================================================
+data:
+  # Allocation assets (used in portfolio construction)
+  allocation_tickers: [SPY, TLT, GLD, PDBC]
+
+  # Signal-only assets (used in features, not allocated to)
+  signal_tickers: [LQD, "^VIX"]
+
+  # Full universe (allocation + signal)
+  all_tickers: [SPY, TLT, GLD, PDBC, LQD, "^VIX"]
+
+  start_date: "2007-01-01"       # Captures GFC, covers 3 full market cycles
+  end_date: null                 # null = today
+
+  # IEF used only for credit stress proxy computation (LQD relative to IEF)
+  ief_ticker: "IEF"
+
+  # Forward-fill limit for illiquid assets (trading halt, holiday gap)
+  max_ffill_days: 2
+
+  # Error threshold: raise if missing data exceeds this fraction
+  max_missing_fraction: 0.05
+
+  # Cache raw data locally to avoid repeated API calls
+  cache_raw: true
+  cache_path: "data/raw/"
+  processed_path: "data/processed/"
+
+# =============================================================================
+# FEATURE ENGINEERING
+# =============================================================================
+features:
+  realized_vol_short_window: 21        # days, short-term vol
+  realized_vol_long_window: 63         # days, long-term vol
+  return_lookback: 21                  # days, momentum signal
+  skew_window: 63                      # days, return skewness
+  sma_long_window: 200                 # days, trend filter
+  credit_stress_window: 21             # days, LQD vs IEF rolling return
+  vix_ma_window: 21                    # days, VIX moving average for momentum
+
+  # Note: feature validity is enforced by the backtester's NaN mask.
+  # Rows with any NaN feature are excluded from HMM training automatically.
+
+# =============================================================================
+# REGIME DETECTION — HMM
+# =============================================================================
+hmm:
+  n_states: 3
+  covariance_type: "full"             # Full covariance per state — captures inter-feature correlations
+  n_iter: 100                         # EM iterations for fitting
+  random_state: 42                    # Reproducibility
+
+  # Walk-forward schedule
+  warmup_days: 504                    # ~2 years before first fit (index-based, not calendar)
+  refit_every_days: 252               # Annual refit on expanding window
+
+  # State labeling: sort states by mean of this feature (ascending = risk-on first)
+  label_by_feature: "realized_vol_21d"
+
+  # Regime labels (do not change — used as keys throughout codebase)
+  state_labels: [RISK_ON, NEUTRAL, RISK_OFF]
+
+# =============================================================================
+# REGIME DETECTION — COMPOSITE (RULE-BASED)
+# =============================================================================
+composite:
+  # Signal thresholds
+  # Note: trend SMA, vol stress windows are controlled by features.* settings above.
+  # The composite detector consumes pre-built features, not raw prices.
+  drawdown_window: 252                # trailing high lookback (1 year)
+  drawdown_threshold: 0.10            # 10% drawdown from high triggers stress signal
+  credit_stress_threshold: -0.005     # LQD vs IEF 21d return below -0.5% triggers signal
+
+  # Score → regime mapping
+  # Score = sum of 4 binary signals {+1, -1}
+  risk_on_threshold: 2                # score >= 2 → RISK_ON
+  risk_off_threshold: -2              # score <= -2 → RISK_OFF
+  # otherwise → NEUTRAL
+
+# =============================================================================
+# REGIME PERSISTENCE FILTER
+# =============================================================================
+persistence:
+  min_confirmation_days: 3            # New regime must persist N days before acting
+
+# =============================================================================
+# VOLATILITY ESTIMATION
+# =============================================================================
+vol_estimation:
+  ewma_lambda: 0.94                   # RiskMetrics standard — half-life ~11 days
+  realized_window: 21                 # Rolling std window (days) for realized vol
+  ewma_realized_blend: 0.50           # 50% EWMA + 50% realized
+  annualization_factor: 252           # Trading days per year
+
+  # Covariance regularization (add to diagonal if matrix not PSD)
+  cov_regularization: 1.0e-8
+
+  # Minimum vol floor (avoid division by zero in weight calculation)
+  min_vol_floor: 0.01                 # 1% annualized minimum
+
+# =============================================================================
+# POSITION SIZING
+# =============================================================================
+position_sizing:
+  # Strategic tilts by regime (sum to 1.0 per regime)
+  # These define the direction of allocation; vol-targeting scales the total size
+  strategic_weights:
+    RISK_ON:
+      SPY: 0.50
+      TLT: 0.20
+      GLD: 0.15
+      PDBC: 0.15
+    NEUTRAL:
+      SPY: 0.35
+      TLT: 0.35
+      GLD: 0.20
+      PDBC: 0.10
+    RISK_OFF:
+      SPY: 0.15
+      TLT: 0.50
+      GLD: 0.30
+      PDBC: 0.05
+
+  # Target annualized portfolio volatility by regime
+  target_vol:
+    RISK_ON: 0.15                     # 15%
+    NEUTRAL: 0.10                     # 10%
+    RISK_OFF: 0.06                    # 6%
+
+  # Maximum gross exposure (sum of absolute weights) by regime
+  leverage_caps:
+    RISK_ON: 1.50                     # Up to 150% gross
+    NEUTRAL: 1.00                     # Fully invested, no leverage
+    RISK_OFF: 1.00                    # Fully invested, defensive posture
+
+  # If gross exposure after vol-scaling < min_exposure, hold remainder in cash
+  min_exposure: 0.0                   # Cash floor — no minimum investment required
+
+# =============================================================================
+# REBALANCING
+# =============================================================================
+rebalancing:
+  # Vol drift trigger: rebalance if |σ_today / σ_last_rebal - 1| > threshold
+  vol_deviation_threshold: 0.20       # 20% vol drift from last rebalance
+
+  # Transaction cost: applied proportional to turnover
+  cost_bps: 5.0                       # basis points per unit of turnover
+  # Formula: cost = (cost_bps / 10_000) × Σ|w_new(i) - w_old(i)|
+
+# =============================================================================
+# BACKTESTING
+# =============================================================================
+backtest:
+  initial_nav: 100.0                  # Starting NAV
+  risk_free_rate: 0.0                 # Annual. Used in Sharpe calculation.
+                                      # Simplifying assumption: cash earns 0%
+
+  # Trade execution lag
+  signal_to_execution_lag_days: 1     # Signal at t → trade at t+1
+
+  # Benchmarks to run in parallel
+  benchmarks:
+    spy_buyhold:
+      tickers: [SPY]
+      weights: [1.0]
+      rebalance: false
+
+    sixty_forty:
+      tickers: [SPY, TLT]
+      weights: [0.60, 0.40]
+      rebalance: monthly
+
+    static_vol_parity:
+      tickers: [SPY, TLT, GLD, PDBC]
+      target_vol: 0.10                # Constant target — no regime
+      rebalance: monthly
+
+    regime_only:
+      tickers: [SPY, TLT, GLD, PDBC]
+      use_regime_weights: true
+      vol_scaling: false              # Strategic tilt, no vol-targeting scalar
+
+# =============================================================================
+# ANALYTICS
+# =============================================================================
+analytics:
+  # Stress test periods
+  stress_periods:
+    GFC:
+      start: "2008-09-01"
+      end: "2009-03-31"
+    COVID:
+      start: "2020-02-19"
+      end: "2020-03-23"
+    rate_shock_2022:
+      start: "2022-01-01"
+      end: "2022-12-31"
+
+  # Rolling window for regime-conditional analytics
+  rolling_window: 252                  # 1 year
+
+  # Drawdown calculation method
+  drawdown_method: "peak_to_trough"
+
+# =============================================================================
+# OUTPUTS
+# =============================================================================
+outputs:
+  tearsheet_path: "outputs/tearsheet.csv"
+  regime_labels_path: "data/processed/regime_labels.csv"
+  nav_series_path: "data/processed/nav_series.csv"
+  weights_path: "data/processed/weights.csv"
+  features_path: "data/processed/features.csv"
+
+# =============================================================================
+# STREAMLIT DASHBOARD
+# =============================================================================
+dashboard:
+  title: "Volatility Regime Engine"
+  theme: "bloomberg_dark"
+  tabs:
+    - OVERVIEW
+    - REGIMES
+    - PORTFOLIO
+    - ANALYTICS
+    - ATTRIBUTION
