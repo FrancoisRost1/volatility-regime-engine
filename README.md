@@ -26,6 +26,25 @@ A two-layer systematic allocation engine for a 4-asset portfolio (SPY, TLT, GLD,
 
 ---
 
+## Dashboard
+
+**Overview**
+![Overview](docs/screenshots/overview.png)
+
+**Regimes**
+![Regimes](docs/screenshots/regimes.png)
+
+**Portfolio**
+![Portfolio](docs/screenshots/portfolio.png)
+
+**Analytics**
+![Analytics](docs/screenshots/analytics.png)
+
+**Attribution**
+![Attribution](docs/screenshots/attribution.png)
+
+---
+
 ## Architecture
 
 ```
