@@ -109,13 +109,13 @@ def render(data: dict) -> None:
         if not stress.empty:
             display = stress.copy()
             display["return"] = display["return"].map(
-                lambda x: f"{x:.1%}" if pd.notna(x) else "—"
+                lambda x: f"{x:.1%}" if pd.notna(x) else ""
             )
             display["max_drawdown"] = display["max_drawdown"].map(
-                lambda x: f"{x:.1%}" if pd.notna(x) else "—"
+                lambda x: f"{x:.1%}" if pd.notna(x) else ""
             )
             display["sharpe"] = display["sharpe"].map(
-                lambda x: f"{x:.2f}" if pd.notna(x) else "—"
+                lambda x: f"{x:.2f}" if pd.notna(x) else ""
             )
             st.dataframe(display, hide_index=True, use_container_width=True)
 
@@ -128,8 +128,8 @@ def render(data: dict) -> None:
             if gfc_end and pd.Timestamp(gfc_end) < data_start:
                 st.markdown(
                     f"<p style='color: {TOKENS['text_muted']}; font-size: 0.8rem;'>"
-                    f"<b>Note:</b> GFC period (Sep 2008 – Mar 2009) shows "
-                    f"\"—\" because PDBC data begins {data_start.strftime('%b %Y')}, "
+                    f"<b>Note:</b> GFC period (Sep 2008 - Mar 2009) shows "
+                    f"\"\" because PDBC data begins {data_start.strftime('%b %Y')}, "
                     f"after the HMM warmup window. The backtest cannot produce "
                     f"live signals for dates before its first trade. "
                     f"COVID and 2022 Rate Shock are fully covered.</p>",

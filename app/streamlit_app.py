@@ -53,7 +53,7 @@ data = load_data()
 import datetime
 
 ts = data["ts"]
-date_range = f"{ts.index[0].strftime('%b %Y')} — {ts.index[-1].strftime('%b %Y')}"
+date_range = f"{ts.index[0].strftime('%b %Y')}: {ts.index[-1].strftime('%b %Y')}"
 run_date = data.get("tearsheet_run_date")
 run_str = run_date.strftime("%Y-%m-%d %H:%M") if run_date else "unknown"
 styled_header("Volatility Regime Engine",

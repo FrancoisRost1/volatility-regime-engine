@@ -10,7 +10,7 @@
 
 ## What It Does
 
-A two-layer systematic allocation engine for a 4-asset portfolio (SPY, TLT, GLD, PDBC). **Layer 1** runs two parallel regime classifiers — a 3-state Gaussian Hidden Markov Model trained on an 8-feature vector (using filtered probabilities only, no future information) and a transparent rule-based composite detector built from trend, volatility stress, drawdown, and credit signals. Both output one of three states: RISK_ON, NEUTRAL, or RISK_OFF. **Layer 2** takes the regime label and a blended EWMA + realized volatility estimate, computes inverse-vol weights within a regime-conditional strategic tilt, and scales total portfolio exposure to hit a regime-specific target volatility (15% / 10% / 6%). The engine rebalances only on confirmed regime changes (3-day persistence filter) or when portfolio vol drifts >20% from the last rebalance level, keeping turnover low and costs realistic.
+A two-layer systematic allocation engine for a 4-asset portfolio (SPY, TLT, GLD, PDBC). **Layer 1** runs two parallel regime classifiers, a 3-state Gaussian Hidden Markov Model trained on an 8-feature vector (using filtered probabilities only, no future information) and a transparent rule-based composite detector built from trend, volatility stress, drawdown, and credit signals. Both output one of three states: RISK_ON, NEUTRAL, or RISK_OFF. **Layer 2** takes the regime label and a blended EWMA + realized volatility estimate, computes inverse-vol weights within a regime-conditional strategic tilt, and scales total portfolio exposure to hit a regime-specific target volatility (15% / 10% / 6%). The engine rebalances only on confirmed regime changes (3-day persistence filter) or when portfolio vol drifts >20% from the last rebalance level, keeping turnover low and costs realistic.
 
 ---
 
@@ -86,7 +86,7 @@ yfinance ──→ data_loader ──→ feature_builder ──→ regime_detect
 
 ## Design Decisions
 
-- **Filtered HMM probabilities only.** The forward algorithm is used for regime classification — never the Viterbi smoother. This guarantees the regime label at date *t* uses only data available up to *t*, eliminating lookahead bias.
+- **Filtered HMM probabilities only.** The forward algorithm is used for regime classification, never the Viterbi smoother. This guarantees the regime label at date *t* uses only data available up to *t*, eliminating lookahead bias.
 - **Signal at *t*, trade at *t+1*.** Strict no-same-day execution. All signals are formed at close of day *t* and trades are executed at the next day's close. Non-negotiable.
 - **Turnover-based transaction costs.** Cost = 5 bps x realized turnover on rebalance days. A small vol-drift rebalance costs less than a full regime flip, matching real-world execution.
 - **3-day persistence filter.** A regime change is only acted on if the new state persists for 3+ consecutive days, eliminating noise-driven flips and spurious turnover.
@@ -177,10 +177,10 @@ Data is fetched from yfinance on first run and cached locally. No API key requir
 
 ---
 
-*Project 5 of 11 in a systematic finance GitHub series — [github.com/FrancoisRost1](https://github.com/FrancoisRost1)*
+*Project 5 of 11 in a systematic finance GitHub series, [github.com/FrancoisRost1](https://github.com/FrancoisRost1)*
 
 ---
 
 ## Author
 
-Francois Rostaing — [GitHub](https://github.com/FrancoisRost1)
+Francois Rostaing, [GitHub](https://github.com/FrancoisRost1)

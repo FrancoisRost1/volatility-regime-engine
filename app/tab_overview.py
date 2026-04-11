@@ -99,7 +99,7 @@ def render(data: dict) -> None:
         ))
 
     fig.update_layout(
-        title="NAV — Strategy vs Benchmarks",
+        title="NAV: Strategy vs Benchmarks",
         yaxis_title="NAV (log scale)", yaxis_type="log",
         height=480, legend=dict(orientation="h", y=-0.15),
     )
