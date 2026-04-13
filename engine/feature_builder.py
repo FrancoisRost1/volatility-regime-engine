@@ -74,7 +74,7 @@ def build_features(prices: pd.DataFrame, returns: pd.DataFrame,
     sma200 = spy_px.rolling(feat_cfg["sma_long_window"]).mean()
     features["spy_vs_sma200"] = spy_px / sma200 - 1
 
-    # Feature 6: Credit stress proxy — LQD 21d return minus IEF 21d return
+    # Feature 6: Credit stress proxy, LQD 21d return minus IEF 21d return
     # Simplifying assumption: price-based proxy for IG credit spreads,
     # not a true OAS derived from bond cashflows
     cw = feat_cfg["credit_stress_window"]
@@ -85,7 +85,7 @@ def build_features(prices: pd.DataFrame, returns: pd.DataFrame,
     # Feature 7: VIX level (raw)
     features["vix_level"] = vix_px.reindex(features.index)
 
-    # Feature 8: VIX momentum — VIX / 21-day SMA of VIX - 1
+    # Feature 8: VIX momentum, VIX / 21-day SMA of VIX - 1
     vix_ma = vix_px.rolling(feat_cfg["vix_ma_window"]).mean()
     features["vix_momentum"] = (vix_px / vix_ma - 1).reindex(features.index)
 
@@ -117,7 +117,7 @@ def z_score_features(features: pd.DataFrame, fit_end_idx: int) -> pd.DataFrame:
     mu = train_slice.mean()
     sigma = train_slice.std()
 
-    # Avoid division by zero — if a feature has zero variance, leave unscaled (NaN)
+    # Avoid division by zero, if a feature has zero variance, leave unscaled (NaN)
     sigma = sigma.replace(0, np.nan)
 
     scaled = (features - mu) / sigma

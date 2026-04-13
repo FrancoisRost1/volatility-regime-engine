@@ -94,7 +94,7 @@ def compute_blended_vol(returns: pd.DataFrame,
 
     sigma_est = blend * realized + (1 - blend) * ewma
 
-    Financial rationale: the blend stabilizes estimates — EWMA reacts
+    Financial rationale: the blend stabilizes estimates, EWMA reacts
     quickly to shocks while realized vol prevents overreaction.
 
     Parameters

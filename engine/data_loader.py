@@ -9,7 +9,7 @@ Financial rationale: using adjusted close accounts for dividends and
 splits. Log returns are additive across time, making them natural for
 rolling statistics and HMM feature construction.
 
-Simplifying assumption: VIX has no adjusted close — regular close is used.
+Simplifying assumption: VIX has no adjusted close, regular close is used.
 PDBC history starts ~2014; engine auto-adjusts start date if needed.
 """
 
@@ -59,14 +59,14 @@ def load_prices(config: dict) -> pd.DataFrame:
     if raw.empty:
         raise ValueError(f"yfinance returned empty DataFrame for {all_tickers}")
 
-    # Extract close prices — yfinance returns MultiIndex columns for multi-ticker
+    # Extract close prices, yfinance returns MultiIndex columns for multi-ticker
     if isinstance(raw.columns, pd.MultiIndex):
         prices = raw["Close"]
     else:
         prices = raw[["Close"]].copy()
         prices.columns = all_tickers
 
-    # VIX has no adjusted close — already handled by using Close above
+    # VIX has no adjusted close, already handled by using Close above
     # Drop rows where ALL prices are NaN
     prices = prices.dropna(how="all")
 
@@ -110,7 +110,7 @@ def compute_log_returns(prices: pd.DataFrame) -> pd.DataFrame:
 
     Financial rationale: log returns are time-additive, making cumulative
     return calculation and rolling statistics mathematically cleaner than
-    simple returns. Used for features and vol estimation only — NAV
+    simple returns. Used for features and vol estimation only, NAV
     compounding uses simple returns via compute_simple_returns().
 
     Parameters
@@ -136,7 +136,7 @@ def compute_simple_returns(prices: pd.DataFrame) -> pd.DataFrame:
     First row is NaN and is dropped before returning.
 
     Financial rationale: simple returns are the correct basis for
-    portfolio PnL compounding — NAV(t+1) = NAV(t) * (1 + w'r_simple).
+    portfolio PnL compounding, NAV(t+1) = NAV(t) * (1 + w'r_simple).
     Log returns are NOT additive across assets in a weighted portfolio.
 
     Parameters

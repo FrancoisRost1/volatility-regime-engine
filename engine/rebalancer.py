@@ -32,8 +32,8 @@ def should_rebalance(regime_today: str, regime_last_rebal: str,
       B: |port_vol_today / port_vol_last_rebal - 1| > threshold
 
     Financial rationale:
-      Condition A — regime shift changes target vol and strategic tilt.
-      Condition B — within a stable regime, vol can drift enough that
+      Condition A, regime shift changes target vol and strategic tilt.
+      Condition B, within a stable regime, vol can drift enough that
       actual portfolio risk deviates materially from target.
 
     Parameters

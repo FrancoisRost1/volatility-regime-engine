@@ -1,5 +1,5 @@
 """
-PORTFOLIO tab — Asset weights, exposure, realized vs target vol.
+PORTFOLIO tab, Asset weights, exposure, realized vs target vol.
 
 Shows how the portfolio composition evolves through regime shifts and
 vol-targeting adjustments. The vol ribbon chart visualizes how well

@@ -1,5 +1,5 @@
 """
-ATTRIBUTION tab — Benchmark decomposition, turnover, cost analysis.
+ATTRIBUTION tab, Benchmark decomposition, turnover, cost analysis.
 
 Decomposes strategy value into components: diversification (60/40),
 vol management (static vol-parity), regime detection (regime-only),

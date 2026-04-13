@@ -42,7 +42,7 @@ from engine.analytics_regime import (
     compute_stress_period_metrics,
 )
 
-# Regime color mapping — consistent across all charts
+# Regime color mapping, consistent across all charts
 REGIME_COLORS = {
     "RISK_ON": "#10B981",   # Emerald / success
     "NEUTRAL": "#F59E0B",   # Amber / warning
@@ -106,7 +106,7 @@ def load_data():
         bret = ba.pct_change().dropna()
         bench_metrics[bname] = compute_overall_metrics(ba, bret, spy_ret, config)
 
-    # Tearsheet run date — detect from file modification time
+    # Tearsheet run date, detect from file modification time
     tearsheet_file = _PROJECT_ROOT / "outputs" / "tearsheet.csv"
     tearsheet_mtime = datetime.datetime.fromtimestamp(
         tearsheet_file.stat().st_mtime

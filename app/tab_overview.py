@@ -1,5 +1,5 @@
 """
-OVERVIEW tab — NAV chart with regime bands, KPIs, current state.
+OVERVIEW tab, NAV chart with regime bands, KPIs, current state.
 
 Shows the strategy's equity curve against all benchmarks with colored
 regime overlay bands. Log scale NAV reveals compounding dynamics.

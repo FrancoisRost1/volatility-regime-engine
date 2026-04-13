@@ -3,7 +3,7 @@ Regime-conditional and stress period analytics for volatility-regime-engine.
 
 Financial rationale: regime-conditional metrics prove the strategy adapts
 correctly to each market state. Stress period isolation is the acid test
-for drawdown control — the primary value proposition of regime-based allocation.
+for drawdown control, the primary value proposition of regime-based allocation.
 """
 
 import numpy as np
@@ -134,7 +134,7 @@ def compute_transition_matrix(regimes: pd.Series) -> pd.DataFrame:
     matrix = pd.DataFrame(0.0, index=labels, columns=labels)
 
     if len(regimes) < 2:
-        # Not enough data for transitions — return uniform
+        # Not enough data for transitions, return uniform
         return pd.DataFrame(
             1.0 / len(labels), index=labels, columns=labels,
         )

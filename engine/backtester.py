@@ -45,7 +45,7 @@ class WalkForwardBacktester:
     Expanding-window walk-forward backtester.
 
     Timeline:
-      t=0 to t=warmup-1:  Warmup — HMM not yet fit, no trades.
+      t=0 to t=warmup-1:  Warmup, HMM not yet fit, no trades.
       t=warmup:            First HMM fit. First signal generated.
       Every refit_every:   HMM refit on expanding window [0..t].
       Every day:           Features, regime, rebalance check, NAV update.
@@ -102,7 +102,7 @@ class WalkForwardBacktester:
         alloc_ret_log = returns[self.alloc_tickers].reindex(features_raw.index)
         alloc_ret_simple = simple_ret[self.alloc_tickers].reindex(features_raw.index)
 
-        # Pre-compute vol estimates and covariance matrices (use log returns — correct for risk)
+        # Pre-compute vol estimates and covariance matrices (use log returns, correct for risk)
         vol_est = compute_blended_vol(alloc_ret_log, self.config)
         cov_dict = compute_ewma_covariance(alloc_ret_log, self.config)
 

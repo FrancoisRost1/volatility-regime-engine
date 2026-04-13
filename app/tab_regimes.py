@@ -1,5 +1,5 @@
 """
-REGIMES tab — HMM probabilities, composite regime, transition matrix.
+REGIMES tab, HMM probabilities, composite regime, transition matrix.
 
 Visualizes regime dynamics: how the model classifies markets over time,
 transition probabilities between states, and agreement between HMM and

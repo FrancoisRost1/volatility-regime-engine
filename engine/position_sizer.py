@@ -59,7 +59,7 @@ def compute_weights(regime: str, vol_estimates: np.ndarray,
     port_vol = compute_portfolio_vol(w_ivol, cov_matrix)
 
     if np.isnan(port_vol) or port_vol <= 0:
-        # Edge case: cannot compute portfolio vol — return strategic weights
+        # Edge case: cannot compute portfolio vol, return strategic weights
         return strategic
 
     scale = target_vol / port_vol
@@ -125,14 +125,14 @@ def _inverse_vol_adjust(strategic: np.ndarray,
     np.ndarray
         Inverse-vol adjusted weights summing to 1.0.
     """
-    # Handle zero or NaN vol — set weight to 0 for those assets
+    # Handle zero or NaN vol, set weight to 0 for those assets
     valid = (vol_estimates > 0) & ~np.isnan(vol_estimates)
     w_ivol = np.zeros_like(strategic, dtype=float)
     w_ivol[valid] = strategic[valid] / vol_estimates[valid]
 
     total = w_ivol.sum()
     if total <= 0:
-        # All vols invalid — fall back to equal weight on valid assets
+        # All vols invalid, fall back to equal weight on valid assets
         return strategic / strategic.sum()
 
     return w_ivol / total

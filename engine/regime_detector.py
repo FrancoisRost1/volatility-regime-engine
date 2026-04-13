@@ -4,8 +4,8 @@ from __future__ import annotations
 Regime detection for volatility-regime-engine.
 
 Two parallel classifiers:
-  1. HMMRegimeDetector — Gaussian HMM with 3 states, filtered probabilities only
-  2. CompositeRegimeDetector — transparent rule-based classifier (4 signals)
+  1. HMMRegimeDetector, Gaussian HMM with 3 states, filtered probabilities only
+  2. CompositeRegimeDetector, transparent rule-based classifier (4 signals)
 
 Both output one of: RISK_ON, NEUTRAL, RISK_OFF.
 
@@ -29,7 +29,7 @@ class HMMRegimeDetector:
     """
     Gaussian HMM with 3 hidden states trained on the 8-feature vector.
 
-    Uses filtered (forward-algorithm) probabilities only — no smoothing.
+    Uses filtered (forward-algorithm) probabilities only, no smoothing.
     This guarantees regime classification at date t uses only data up to t.
 
     States are labeled post-hoc by sorting emission means of realized_vol_21d:
@@ -107,7 +107,7 @@ class HMMRegimeDetector:
 
         Implementation: for each time step t, run predict_proba on
         features_scaled[0:t+1] and take the argmax of the last row.
-        This simulates live forward-only inference — no future data.
+        This simulates live forward-only inference, no future data.
 
         CAUTION: hmmlearn's .predict() uses Viterbi (smoothed). We must
         NOT use it. Instead we use the forward algorithm via score_samples
@@ -127,7 +127,7 @@ class HMMRegimeDetector:
         labels = np.empty(n_obs, dtype=object)
 
         for t in range(n_obs):
-            # Forward algorithm on sequence [0..t] — filtered posterior at t
+            # Forward algorithm on sequence [0..t], filtered posterior at t
             proba = self.model.predict_proba(features_scaled[: t + 1])
             state_idx = int(np.argmax(proba[-1]))
             labels[t] = self._label_map[state_idx]
@@ -170,10 +170,10 @@ class CompositeRegimeDetector:
     Transparent rule-based regime classifier using 4 interpretable signals.
 
     Each signal votes +1 (supportive) or -1 (stress). Total score -> regime.
-      Signal 1 — Trend:         SPY > 200-day SMA -> +1, else -1
-      Signal 2 — Vol stress:    21d vol < 63d vol -> +1, else -1
-      Signal 3 — Drawdown:      SPY drawdown < threshold -> +1, else -1
-      Signal 4 — Credit stress: LQD vs IEF spread > threshold -> +1, else -1
+      Signal 1, Trend:         SPY > 200-day SMA -> +1, else -1
+      Signal 2, Vol stress:    21d vol < 63d vol -> +1, else -1
+      Signal 3, Drawdown:      SPY drawdown < threshold -> +1, else -1
+      Signal 4, Credit stress: LQD vs IEF spread > threshold -> +1, else -1
 
     Financial rationale: each signal proxies a distinct risk dimension
     (trend, vol regime, correction depth, credit conditions). Thresholds
@@ -216,11 +216,11 @@ class CompositeRegimeDetector:
         idx = features.index
         scores = np.zeros(len(idx), dtype=int)
 
-        # Signal 1: Trend — SPY vs 200-day SMA
+        # Signal 1: Trend, SPY vs 200-day SMA
         trend = features["spy_vs_sma200"].reindex(idx)
         scores += np.where(trend > 0, 1, -1)
 
-        # Signal 2: Vol stress — short vol < long vol means calming
+        # Signal 2: Vol stress, short vol < long vol means calming
         # Financial rationale: vol mean-reversion; short < long = de-stressing
         vol_short = features["realized_vol_21d"].reindex(idx)
         vol_long = features["realized_vol_63d"].reindex(idx)
@@ -232,7 +232,7 @@ class CompositeRegimeDetector:
         drawdown = (spy_px / rolling_high) - 1
         scores += np.where(drawdown.abs() < self.dd_threshold, 1, -1)
 
-        # Signal 4: Credit stress — LQD vs IEF spread
+        # Signal 4: Credit stress, LQD vs IEF spread
         credit = features["credit_stress_proxy"].reindex(idx)
         scores += np.where(credit > self.credit_threshold, 1, -1)
 
@@ -278,7 +278,7 @@ def apply_persistence_filter(regimes: np.ndarray, min_days: int = 3) -> np.ndarr
 
     for i in range(len(regimes)):
         if regimes[i] == confirmed_regime:
-            # Still in confirmed regime — reset any pending
+            # Still in confirmed regime, reset any pending
             filtered[i] = confirmed_regime
             pending_regime = None
             pending_count = 0

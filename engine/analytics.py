@@ -77,7 +77,7 @@ def compute_overall_metrics(nav: pd.Series, daily_returns: pd.Series,
     dd_series, max_dd, max_dd_duration = compute_drawdown(nav)
     calmar = float(cagr / abs(max_dd)) if max_dd != 0 else np.nan
 
-    # Monthly stats — compound daily returns, not sum
+    # Monthly stats, compound daily returns, not sum
     monthly = (1 + daily_returns).resample("ME").prod() - 1
     win_rate = (
         float((monthly > 0).sum() / len(monthly))

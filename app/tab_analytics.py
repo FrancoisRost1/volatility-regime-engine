@@ -1,5 +1,5 @@
 """
-ANALYTICS tab — Tearsheet, drawdown chart, monthly heatmap, stress tests.
+ANALYTICS tab, Tearsheet, drawdown chart, monthly heatmap, stress tests.
 
 Full institutional-quality analytics: drawdown tracking, monthly return
 calendar, regime-conditional Sharpe, and stress period comparisons.
