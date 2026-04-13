@@ -104,7 +104,7 @@ def render(data: dict) -> None:
         height=480, legend=dict(orientation="h", y=-0.15),
     )
     apply_plotly_theme(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     styled_divider()
 

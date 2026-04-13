@@ -50,7 +50,7 @@ def render(data: dict) -> None:
         legend=dict(orientation="h", y=-0.15),
     )
     apply_plotly_theme(fig_prob)
-    st.plotly_chart(fig_prob, use_container_width=True)
+    st.plotly_chart(fig_prob, width="stretch")
 
     styled_divider()
 
@@ -78,7 +78,7 @@ def render(data: dict) -> None:
             yaxis_autorange="reversed", height=340,
         )
         apply_plotly_theme(fig_tm)
-        st.plotly_chart(fig_tm, use_container_width=True)
+        st.plotly_chart(fig_tm, width="stretch")
 
     with col_right:
         styled_section_label("Time in Each Regime")
@@ -93,7 +93,7 @@ def render(data: dict) -> None:
         fig_pie.update_layout(title="Regime Distribution", height=340,
                               showlegend=False)
         apply_plotly_theme(fig_pie)
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, width="stretch")
 
     styled_divider()
 
@@ -133,4 +133,4 @@ def render(data: dict) -> None:
         row["Lev Cap"] = f"{lev_caps[regime]:.0%}"
         alloc_rows.append(row)
     st.dataframe(pd.DataFrame(alloc_rows), hide_index=True,
-                 use_container_width=True)
+                 width="stretch")

@@ -39,7 +39,7 @@ def render(data: dict) -> None:
         height=320,
     )
     apply_plotly_theme(fig_dd)
-    st.plotly_chart(fig_dd, use_container_width=True)
+    st.plotly_chart(fig_dd, width="stretch")
 
     styled_divider()
 
@@ -80,7 +80,7 @@ def render(data: dict) -> None:
         yaxis_autorange="reversed", height=340,
     )
     apply_plotly_theme(fig_hm)
-    st.plotly_chart(fig_hm, use_container_width=True)
+    st.plotly_chart(fig_hm, width="stretch")
 
     styled_divider()
 
@@ -102,7 +102,7 @@ def render(data: dict) -> None:
             yaxis_title="Sharpe", height=340,
         )
         apply_plotly_theme(fig_bar)
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, width="stretch")
 
     with col_right:
         styled_section_label("Stress Period Performance")
@@ -117,7 +117,7 @@ def render(data: dict) -> None:
             display["sharpe"] = display["sharpe"].map(
                 lambda x: f"{x:.2f}" if pd.notna(x) else ""
             )
-            st.dataframe(display, hide_index=True, use_container_width=True)
+            st.dataframe(display, hide_index=True, width="stretch")
 
             # Check if GFC period falls outside data range
             config = data.get("config", {})
@@ -159,4 +159,4 @@ def render(data: dict) -> None:
     df_metrics = pd.DataFrame(
         list(metrics_display.items()), columns=["Metric", "Value"],
     )
-    st.dataframe(df_metrics, hide_index=True, use_container_width=True)
+    st.dataframe(df_metrics, hide_index=True, width="stretch")

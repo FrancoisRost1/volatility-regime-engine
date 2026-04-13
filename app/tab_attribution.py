@@ -52,7 +52,7 @@ def render(data: dict) -> None:
         height=420, legend=dict(orientation="h", y=-0.15),
     )
     apply_plotly_theme(fig)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     styled_divider()
 
@@ -78,7 +78,7 @@ def render(data: dict) -> None:
         rows.append(row)
 
     attr_df = pd.DataFrame(rows)
-    st.dataframe(attr_df, hide_index=True, use_container_width=True)
+    st.dataframe(attr_df, hide_index=True, width="stretch")
 
     styled_divider()
 
@@ -99,7 +99,7 @@ def render(data: dict) -> None:
             yaxis_title="Frequency", height=340,
         )
         apply_plotly_theme(fig_hist)
-        st.plotly_chart(fig_hist, use_container_width=True)
+        st.plotly_chart(fig_hist, width="stretch")
         # Turnover context note
         config = data["config"]
         cost_bps = config["rebalancing"]["cost_bps"]
@@ -132,4 +132,4 @@ def render(data: dict) -> None:
             height=340,
         )
         apply_plotly_theme(fig_cost)
-        st.plotly_chart(fig_cost, use_container_width=True)
+        st.plotly_chart(fig_cost, width="stretch")

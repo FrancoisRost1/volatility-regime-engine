@@ -40,7 +40,7 @@ def render(data: dict) -> None:
         legend=dict(orientation="h", y=-0.15),
     )
     apply_plotly_theme(fig_w)
-    st.plotly_chart(fig_w, use_container_width=True)
+    st.plotly_chart(fig_w, width="stretch")
 
     styled_divider()
 
@@ -62,7 +62,7 @@ def render(data: dict) -> None:
             height=340,
         )
         apply_plotly_theme(fig_exp)
-        st.plotly_chart(fig_exp, use_container_width=True)
+        st.plotly_chart(fig_exp, width="stretch")
 
     with col_right:
         styled_section_label("Realized vs Target Volatility")
@@ -82,7 +82,7 @@ def render(data: dict) -> None:
             legend=dict(orientation="h", y=-0.15),
         )
         apply_plotly_theme(fig_vol)
-        st.plotly_chart(fig_vol, use_container_width=True)
+        st.plotly_chart(fig_vol, width="stretch")
 
     styled_divider()
 
