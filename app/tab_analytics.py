@@ -91,7 +91,7 @@ def render(data: dict) -> None:
         styled_section_label("Sharpe by Regime")
         regimes = regime_cond.index.tolist()
         sharpes = regime_cond["sharpe"].tolist()
-        colors = [REGIME_COLORS.get(r, "#94A3B8") for r in regimes]
+        colors = [REGIME_COLORS.get(r, TOKENS["text_secondary"]) for r in regimes]
         fig_bar = go.Figure(data=go.Bar(
             x=regimes, y=sharpes, marker_color=colors,
             text=[f"{s:.2f}" for s in sharpes], textposition="auto",

@@ -41,7 +41,7 @@ def render(data: dict) -> None:
     ))
     for bname, bnav in benchmarks.items():
         aligned = bnav.reindex(ts.index).dropna()
-        label, color, dash = BENCH_DISPLAY.get(bname, (bname, "#94A3B8", "solid"))
+        label, color, dash = BENCH_DISPLAY.get(bname, (bname, TOKENS["text_secondary"], "solid"))
         fig.add_trace(go.Scatter(
             x=aligned.index, y=aligned.values, name=label,
             line=dict(color=color, width=1.5, dash=dash),

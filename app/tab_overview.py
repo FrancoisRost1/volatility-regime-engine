@@ -91,7 +91,7 @@ def render(data: dict) -> None:
     for bname, bnav in benchmarks.items():
         aligned = bnav.reindex(ts.index).dropna()
         label, color, width, dash = bench_styles.get(
-            bname, (bname, "#94A3B8", 1, "solid"),
+            bname, (bname, TOKENS["text_secondary"], 1, "solid"),
         )
         fig.add_trace(go.Scatter(
             x=aligned.index, y=aligned.values, name=label,
@@ -129,7 +129,7 @@ def _add_regime_bands(fig: go.Figure, ts: pd.DataFrame) -> None:
 
     for i in range(1, len(regimes)):
         if regimes.iloc[i] != current or i == len(regimes) - 1:
-            color = REGIME_COLORS.get(current, "#475569")
+            color = REGIME_COLORS.get(current, TOKENS["text_muted"])
             fig.add_vrect(
                 x0=start, x1=dates[i],
                 fillcolor=color, opacity=0.07, line_width=0, layer="below",

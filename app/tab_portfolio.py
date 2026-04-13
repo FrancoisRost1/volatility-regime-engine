@@ -32,7 +32,7 @@ def render(data: dict) -> None:
         fig_w.add_trace(go.Scatter(
             x=ts.index, y=ts[col], name=ticker, stackgroup="one",
             line=dict(width=0),
-            marker=dict(color=ASSET_COLORS.get(ticker, "#94A3B8")),
+            marker=dict(color=ASSET_COLORS.get(ticker, TOKENS["text_secondary"])),
         ))
     fig_w.update_layout(
         title="Portfolio Weights (Stacked)",

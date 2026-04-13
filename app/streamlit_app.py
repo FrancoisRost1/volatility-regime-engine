@@ -21,7 +21,6 @@ import streamlit as st
 # --- Page config MUST be the first Streamlit call ---
 st.set_page_config(
     page_title="Volatility Regime Engine",
-    page_icon="◆",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -36,7 +35,7 @@ with st.sidebar:
     st.markdown(
         f"<h2 style='color: {TOKENS['accent_primary']}; "
         f"font-family: {TOKENS['font_display']};'>"
-        "◆ Vol Regime Engine</h2>",
+        "Vol Regime Engine</h2>",
         unsafe_allow_html=True,
     )
     st.markdown(
