@@ -20,7 +20,19 @@ if str(_PROJECT_ROOT) not in sys.path:
 import datetime
 
 from utils.config_loader import load_config
-from engine.data_loader import load_prices, compute_log_returns
+from engine.data_loader import load_prices as _load_prices_yf, compute_log_returns
+
+
+def _load_prices_or_snapshot(config):
+    """
+    Prefer the shipped prices snapshot at outputs/prices.csv.
+    Falls back to yfinance when the snapshot is absent (local dev only).
+    Streamlit Cloud blocks yfinance, so the snapshot must be committed.
+    """
+    snap = _PROJECT_ROOT / "outputs" / "prices.csv"
+    if snap.exists():
+        return pd.read_csv(snap, parse_dates=[0], index_col=0)
+    return _load_prices_yf(config)
 from engine.benchmarks import run_benchmarks, _run_buy_hold
 from engine.analytics import compute_overall_metrics, compute_drawdown
 from engine.analytics_regime import (
@@ -61,8 +73,8 @@ def load_data():
         parse_dates=["date"], index_col="date",
     )
 
-    # Price data for benchmarks
-    prices = load_prices(config)
+    # Price data for benchmarks (prefers shipped snapshot, falls back to yfinance locally)
+    prices = _load_prices_or_snapshot(config)
     returns = compute_log_returns(prices)
 
     # Benchmarks
